@@ -4,6 +4,21 @@ Starter template for scalable Go applications using the Gin web framework.
 
 ## File Structure
 
+## Project Structure Details
+
+* **cmd/server/main.go:** This is the entry point of the application. It initializes the Gin router, loads configurations, and starts the server.
+* **compose/local/:** Contains Docker Compose configurations for local development, including setting up the application and a Postgres database.
+* **config/:** Handles application configuration, such as database connections, and loading environment variables.
+* **internal/:**
+    * **controllers/:** Contains the handlers for HTTP requests.  These handlers process incoming requests, interact with services, and return responses.
+    * **database/models/:** Defines the structure of the database tables using GORM.
+    * **database/repositories:** Contains the logic for interacting with the database.
+    * **services/:** Contains the business logic of the application.  Controllers use services to perform operations.
+    * **middleware/:** Contains middleware functions that intercept HTTP requests, for example, for authentication or logging.
+* **routes/routes.go:** Defines the API routes for the application using the Gin router.
+* **scripts/:** (Optional)  Can contain scripts for database migrations, setup, or other tasks.
+* **test/:** (Optional) Contains tests.
+
 
 GoLang-Gin-boilerplate/
 │── cmd/
@@ -41,7 +56,7 @@ GoLang-Gin-boilerplate/
     go version
     ```
 
-## Installation
+## Installation and Running the Applcation without Docker setup
 
 1.  **Create a New Project:**
 
@@ -75,6 +90,11 @@ GoLang-Gin-boilerplate/
     go get -u gorm.io/driver/postgres
     ```
 
+6.  **Install Postgres and Create a DB filestructure:**
+
+    ```bash
+    CREATE DATABASE filestructure;
+
 ## Configuration
 
 * **.env:** This file is used to store environment variables.  Make sure to create a `.env` file in the root directory of your project.  Example:
@@ -91,6 +111,22 @@ GoLang-Gin-boilerplate/
 
 ## Running the Application
 
+1.  **Without Docker:**
+    * cd into `cmd/server`
+    * Set the required environment variables.
+    * Run the `main.go` file:
+
+        ```bash
+        go run main.go
+        ```
+
+        or 
+
+        ```bash
+        make run
+        ```
+
+## Installation and Running the Applcation using Docker setup
 1.  **Using Docker Compose (Recommended):**
 
     * Make sure you have Docker and Docker Compose installed.
@@ -100,30 +136,36 @@ GoLang-Gin-boilerplate/
         docker-compose up -d
         ```
 
-2.  **Without Docker:**
-    * Install Postgres and create a database.
-    * cd into `cmd/server`
-    * Set the required environment variables.
-    * Run the `main.go` file:
+## Under ths Boiler plate i have create 3 sample API's(you can check under routes/routes.go)
 
-        ```bash
-        go run main.go
-        ```
+**Fetch the list of users from repository file:**
+```bash
+curl --location 'http://localhost:8080/api/users' \
+--data ''
+```
 
-## Project Structure Details
+**Fetch the user by ID:**
+```bash
+curl --location 'http://localhost:8080/api/DBusers?id=1' \
+--data ''
+```
+ 
+**Fetch the list of users:**
+```bash
+curl --location 'http://localhost:8080/api/DBusers' \
+--data ''
+```
+ 
+ **Create the users in DB:**
+```bash
+curl --location 'http://localhost:8080/api/DBusers' \
+--header 'Content-Type: application/json' \
+--data '{
+    "name": "Clark Kent"
+}'
+```
 
-* **cmd/server/main.go:** This is the entry point of the application. It initializes the Gin router, loads configurations, and starts the server.
-* **compose/local/:** Contains Docker Compose configurations for local development, including setting up the application and a Postgres database.
-* **config/:** Handles application configuration, such as database connections, and loading environment variables.
-* **internal/:**
-    * **controllers/:** Contains the handlers for HTTP requests.  These handlers process incoming requests, interact with services, and return responses.
-    * **database/models/:** Defines the structure of the database tables using GORM.
-    * **database/repositories:** Contains the logic for interacting with the database.
-    * **services/:** Contains the business logic of the application.  Controllers use services to perform operations.
-    * **middleware/:** Contains middleware functions that intercept HTTP requests, for example, for authentication or logging.
-* **routes/routes.go:** Defines the API routes for the application using the Gin router.
-* **scripts/:** (Optional)  Can contain scripts for database migrations, setup, or other tasks.
-* **test/:** (Optional) Contains tests.
+
 
 ## Dependencies
 
