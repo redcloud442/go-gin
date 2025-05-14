@@ -1,0 +1,42 @@
+############################
+# STEP 1: Build Executable Binary
+############################
+FROM golang:1.23-alpine AS builder
+
+# Install git and dependencies
+RUN apk update && apk add --no-cache git
+
+# Set working directory
+WORKDIR /app
+
+# Copy go.mod and go.sum to leverage caching
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy the entire source code
+COPY . .
+
+# Build the binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go/main ./cmd/server/main.go
+
+############################
+# STEP 2: Build Minimal Image
+############################
+FROM alpine:3
+
+# Set working directory
+WORKDIR /go
+
+# Copy binary from the builder stage
+COPY --from=builder /go/main /go/main
+
+
+# Environment variables
+ENV PORT 8080
+ENV GIN_MODE release
+
+# Expose the port
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["/go/main"]
