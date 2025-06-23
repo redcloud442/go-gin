@@ -2,60 +2,84 @@ package controllers
 
 import (
 	"net/http"
+
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/inikhildubey/GoLang-Gin-boilerplate/internal/models"
-	"github.com/inikhildubey/GoLang-Gin-boilerplate/internal/repositories"
+	"github.com/inikhildubey/GoLang-Gin-boilerplate/internal/services"
 )
 
 // Get all users
-func GetUsers(c *gin.Context) {
-	users, err := repositories.FetchUsers()
+func GetAllRegions(c *gin.Context) {
+	regions, err := services.GetAllRegions()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, regions)
 }
 
-func FetchUsers(c *gin.Context) {
-	idParam := c.Query("id") // Get ID from query parameters
-	var id *uint
-
-	if idParam != "" { // Convert ID to uint if provided
-		parsedID, err := strconv.ParseUint(idParam, 10, 32)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-			return
-		}
-		uid := uint(parsedID)
-		id = &uid
-	}
-
-	users, err := repositories.GetUsers(id)
+func GetAllProvinces(c *gin.Context) {
+	provinces, err := services.GetAllProvinces()
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"users": users})
+	c.JSON(http.StatusOK, provinces)
 }
 
-// CreateUserController handles the user creation request
-func CreateUserController(c *gin.Context) {
-	var user models.User
-
-	// Bind JSON request to the struct
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func GetSpecificRegion(c *gin.Context) {
+	regionID, err := strconv.Atoi(c.Param("region_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid region ID"})
 		return
 	}
-
-	// Insert user into DB
-	if err := repositories.CreateUser(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+	region, err := services.GetSpecificRegion(regionID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully", "user": user})
+	c.JSON(http.StatusOK, region)
+}
+
+func GetSpecificProvince(c *gin.Context) {
+	provinceID, err := strconv.Atoi(c.Param("province_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid province ID"})
+		return
+	}
+	province, err := services.GetSpecificMunicipality(provinceID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, province)
+}
+
+func GetSpecificMunicipality(c *gin.Context) {
+	municipalityID, err := strconv.Atoi(c.Param("municipality_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid municipality ID"})
+		return
+	}
+	municipality, err := services.GetSpecificMunicipality(municipalityID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, municipality)
+}
+
+func GetSpecificBarangay(c *gin.Context) {
+	municipalityID, err := strconv.Atoi(c.Param("municipality_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid barangay ID"})
+		return
+	}
+	barangay, err := services.GetSpecificBarangay(municipalityID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, barangay)
 }

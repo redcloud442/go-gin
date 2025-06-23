@@ -9,11 +9,8 @@ import (
 
 // Config struct holds database configurations
 type Config struct {
-	DBHost     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	DBPort     string
+	DBConnectionString string
+	PORT               string
 }
 
 // LoadConfig reads configuration values from .env file
@@ -24,10 +21,7 @@ func LoadConfig() (*Config, error) {
 	}
 
 	return &Config{
-		DBHost:     os.Getenv("POSTGRES_HOST"),
-		DBUser:     os.Getenv("POSTGRES_USER"),
-		DBPassword: os.Getenv("POSTGRES_PASSWORD"),
-		DBName:     os.Getenv("POSTGRES_DB"),
-		DBPort:     os.Getenv("POSTGRES_PORT"),
+		DBConnectionString: os.Getenv("NEON_CONNECTION_STRING"),
+		PORT:               os.Getenv("PORT"),
 	}, nil
 }

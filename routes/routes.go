@@ -9,10 +9,14 @@ import (
 
 func RegisterRoutes(router *gin.Engine) {
 	fmt.Print("\n Routes")
-	api := router.Group("/api")
+
+	api := router.Group("/api/v2")
 	{
-		api.GET("/users", controllers.GetUsers)
-		api.GET("/DBusers", controllers.FetchUsers)
-		api.POST("/DBusers", controllers.CreateUserController)
+		api.GET("/location/region", controllers.GetAllRegions)
+		api.GET("/location/region/:region_id", controllers.GetSpecificRegion)
+		api.GET("/location/province", controllers.GetAllProvinces)
+		api.GET("/location/province/:province_id", controllers.GetSpecificProvince)
+		api.GET("/location/municipality/:municipality_id", controllers.GetSpecificMunicipality)
+		api.GET("/location/barangay/:municipality_id", controllers.GetSpecificBarangay)
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/inikhildubey/GoLang-Gin-boilerplate/config"
-	"github.com/inikhildubey/GoLang-Gin-boilerplate/internal/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,12 +19,7 @@ func InitDB() {
 		log.Fatal("❌ Failed to load configuration:", err)
 	}
 
-	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBPort,
-	)
-
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	database, err := gorm.Open(postgres.Open(cfg.DBConnectionString), &gorm.Config{})
 	if err != nil {
 		log.Fatal("❌ Failed to connect to database:", err)
 	}
@@ -33,8 +27,11 @@ func InitDB() {
 	fmt.Println("✅ Successfully connected to PostgreSQL!")
 	DB = database
 
-	// Auto-migrate models
-	err = database.AutoMigrate(&models.User{})
+	// // Auto-migrate models
+	// err = database.AutoMigrate(&models.RegionTable{})
+	// err = database.AutoMigrate(&models.ProvinceTable{})
+	// err = database.AutoMigrate(&models.MunicipalityTable{})
+	// err = database.AutoMigrate(&models.BarangayTable{})
 	if err != nil {
 		log.Fatal("❌ Failed to auto-migrate database:", err)
 	}
