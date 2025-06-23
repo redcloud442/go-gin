@@ -1,41 +1,44 @@
+# ------------ Build Stage ------------
 
-# Use official Go base image
-FROM golang:1.22 as builder
+# Use Go 1.23.5 as the builder image
+FROM golang:1.23.5 as builder
 
-# Set working directory inside container
+# Set the working directory
 WORKDIR /app
 
-# Copy Go mod and sum files
+# Copy go.mod and go.sum
 COPY go.mod go.sum ./
 
-# Download dependencies
+# Download Go modules
 RUN go mod download
 
-# Copy the entire project into the container
+# Copy the rest of the application
 COPY . .
 
-# Build the Go app (target: cmd/server)
+# Build the Go application (adjust path if needed)
 RUN go build -o main ./cmd/server
 
-# Use a lightweight base image for runtime
+# ------------ Runtime Stage ------------
+
+# Use a lightweight Debian image for production
 FROM debian:bullseye-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy the binary from the builder stage
+# Copy the built binary from the builder
 COPY --from=builder /app/main .
 
-# Set environment variables (optional)
+# Set environment variables
 ARG PORT
 ARG NEON_CONNECTION_STRING
+
 ENV GIN_MODE=release
-ENV PORT=$PORT
-ENV NEON_CONNECTION_STRING=$NEON_CONNECTION_STRING
+ENV PORT=${PORT}
+ENV NEON_CONNECTION_STRING=${NEON_CONNECTION_STRING}
 
+# Expose the specified port
+EXPOSE ${PORT}
 
-# Expose the default Gin port
-EXPOSE $PORT
-
-# Run the binary
+# Command to run the binary
 CMD ["./main"]
